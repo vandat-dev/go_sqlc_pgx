@@ -1,0 +1,83 @@
+### Test API endpoints for go_sqlc_pgx
+
+### 1. Create a new user
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "name": "anh Dat",
+  "phone": "0333322615",
+  "email": "dat@gmail.com"
+}
+
+###
+
+### 2. Create another user (without phone)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "name": "Tran Thi B",
+  "email": "tranthib@example.com"
+}
+
+###
+
+### 3. Create user with phone as empty string
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "name": "Le Van C",
+  "phone": "",
+  "email": "levanc@example.com"
+}
+
+###
+
+### 4. Get all users
+GET http://localhost:8080/users
+
+###
+
+### 5. Get user by ID (replace 1 with actual user ID)
+GET http://localhost:8080/users/1
+
+###
+
+### 6. Get user by ID (test with different ID)
+GET http://localhost:8080/users/2
+
+###
+
+### 7. Test error case - invalid user ID
+GET http://localhost:8080/users/abc
+
+###
+
+### 8. Test error case - non-existent user ID
+GET http://localhost:8080/users/999
+
+###
+
+### 9. Test error case - missing required fields
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "name": "Test User"
+}
+
+###
+
+### 10. Test error case - invalid JSON
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "invalid_json":
+}
+
+### 
