@@ -1,5 +1,7 @@
 ### Test API endpoints for go_sqlc_pgx
 
+# =============== USER ENDPOINTS ===============
+
 ### 1. Create a new user
 POST http://localhost:8080/users
 Content-Type: application/json
@@ -48,19 +50,96 @@ GET http://localhost:8080/users/1
 ### 6. Get user by ID (test with different ID)
 GET http://localhost:8080/users/2
 
+### 7. Get user with products
+GET http://localhost:8080/users/with-products
 ###
 
-### 7. Test error case - invalid user ID
+# =============== PRODUCT ENDPOINTS ===============
+
+### 7. Create a new product
+POST http://localhost:8080/products
+Content-Type: application/json
+
+{
+  "name": "iPhone 15 Pro",
+  "description": "Latest Apple iPhone with A17 Pro chip",
+  "price": 999.99,
+  "user_id": 1
+}
+
+###
+
+### 8. Create another product
+POST http://localhost:8080/products
+Content-Type: application/json
+
+{
+  "name": "MacBook Pro M3",
+  "description": "Powerful laptop for developers",
+  "price": 1999.99,
+  "user_id": 1
+}
+
+###
+
+### 9. Create product for another user
+POST http://localhost:8080/products
+Content-Type: application/json
+
+{
+  "name": "Samsung Galaxy S24",
+  "description": "Android flagship phone",
+  "price": 899.99,
+  "user_id": 2
+}
+
+###
+
+### 10. Get all products
+GET http://localhost:8080/products
+
+###
+
+### 11. Get product by ID
+GET http://localhost:8080/products/1
+
+###
+
+### 12. Get products by user ID
+GET http://localhost:8080/users/1/products
+
+###
+
+### 13. Update product
+PUT http://localhost:8080/products/1
+Content-Type: application/json
+
+{
+  "name": "iPhone 15 Pro Max",
+  "description": "Updated iPhone with larger screen",
+  "price": 1099.99
+}
+
+###
+
+### 14. Delete product
+DELETE http://localhost:8080/products/3
+
+###
+
+# =============== ERROR TEST CASES ===============
+
+### 15. Test error case - invalid user ID
 GET http://localhost:8080/users/abc
 
 ###
 
-### 8. Test error case - non-existent user ID
+### 16. Test error case - non-existent user ID
 GET http://localhost:8080/users/999
 
 ###
 
-### 9. Test error case - missing required fields
+### 17. Test error case - missing required fields for user
 POST http://localhost:8080/users
 Content-Type: application/json
 
@@ -70,14 +149,37 @@ Content-Type: application/json
 
 ###
 
-### 10. Test error case - invalid JSON
-POST http://localhost:8080/users
+### 18. Test error case - missing required fields for product
+POST http://localhost:8080/products
 Content-Type: application/json
 
 {
-  "name": "Test User",
-  "email": "test@example.com",
-  "invalid_json":
+  "name": "Test Product"
+}
+
+###
+
+### 19. Test error case - invalid price format
+POST http://localhost:8080/products
+Content-Type: application/json
+
+{
+  "name": "Test Product",
+  "price": "invalid_price",
+  "user_id": 1
+}
+
+###
+
+### 20. Test error case - foreign key constraint (non-existent user_id)
+POST http://localhost:8080/products
+Content-Type: application/json
+
+{
+  "name": "Test Product",
+  "description": "This should fail",
+  "price": 100.00,
+  "user_id": 999
 }
 
 ### 

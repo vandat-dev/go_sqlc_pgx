@@ -85,3 +85,67 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 	}
 	return items, nil
 }
+
+const listUsersWithProducts = `-- name: ListUsersWithProducts :many
+SELECT
+    u.id as user_id,
+    u.name as user_name,
+    u.phone as user_phone,
+    u.email as user_email,
+    u.created_at as user_created_at,
+    p.id as product_id,
+    p.name as product_name,
+    p.description as product_description,
+    p.price as product_price,
+    p.created_at as product_created_at,
+    p.updated_at as product_updated_at
+FROM users u
+LEFT JOIN products p ON u.id = p.user_id
+ORDER BY u.created_at DESC, p.created_at DESC
+`
+
+type ListUsersWithProductsRow struct {
+	UserID             int32
+	UserName           string
+	UserPhone          pgtype.Text
+	UserEmail          string
+	UserCreatedAt      pgtype.Timestamptz
+	ProductID          pgtype.Int4
+	ProductName        pgtype.Text
+	ProductDescription pgtype.Text
+	ProductPrice       pgtype.Numeric
+	ProductCreatedAt   pgtype.Timestamptz
+	ProductUpdatedAt   pgtype.Timestamptz
+}
+
+func (q *Queries) ListUsersWithProducts(ctx context.Context) ([]ListUsersWithProductsRow, error) {
+	rows, err := q.db.Query(ctx, listUsersWithProducts)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListUsersWithProductsRow
+	for rows.Next() {
+		var i ListUsersWithProductsRow
+		if err := rows.Scan(
+			&i.UserID,
+			&i.UserName,
+			&i.UserPhone,
+			&i.UserEmail,
+			&i.UserCreatedAt,
+			&i.ProductID,
+			&i.ProductName,
+			&i.ProductDescription,
+			&i.ProductPrice,
+			&i.ProductCreatedAt,
+			&i.ProductUpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
